@@ -16,11 +16,11 @@ export default function Home({ go }) {
   return (
     <div className="page" style={{ paddingTop: '3rem' }}>
       <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 12 }}>Team Health Check</div>
-        <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.25, marginBottom: 12 }}>How healthy is your team?</h1>
+        <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 12 }}>Product Line Health Check</div>
+        <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.25, marginBottom: 12 }}>How healthy is your Product Line?</h1>
         <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.65 }}>
           {categories.reduce((sum, c) => sum + c.questions.length, 0)} questions across {categories.length} dimensions. Everyone votes anonymously on their own device.
-          Votes reveal only when the whole team has answered. Lowest score is final.
+          Votes reveal only when everyone has answered. Lowest score is final.
         </p>
       </div>
 
@@ -40,7 +40,7 @@ export default function Home({ go }) {
 
       <p style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', lineHeight: 1.5 }}>
         Facilitator creates a session and shares the code.<br />
-        Team members join on their own devices.
+        Participants join on their own devices.
       </p>
 
       <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
