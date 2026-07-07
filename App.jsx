@@ -9,16 +9,16 @@ import Voting from './Voting.jsx'
 import Results from './Results.jsx'
 import Admin from './Admin.jsx'
 
+const SESSION_KEY = 'plhc_session'
+
 export default function App() {
   const [screen, setScreen] = useState('loading')
   const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
-    // Load questions from Firebase (with default fallback)
     loadCategories(db).then(cats => {
       updateRuntimeCategories(cats)
 
-      // Check URL params
       const params = new URLSearchParams(window.location.search)
       const joinCode = params.get('join')
       const isAdmin = window.location.pathname.includes('/admin') || params.get('admin') === '1'
@@ -29,14 +29,41 @@ export default function App() {
         setSessionData({ prefillCode: joinCode.toUpperCase() })
         setScreen('join')
       } else {
+        // Restore session from sessionStorage if available
+        try {
+          const saved = sessionStorage.getItem(SESSION_KEY)
+          if (saved) {
+            const { screen: savedScreen, sessionData: savedData } = JSON.parse(saved)
+            // Only restore if in an active session (not home/create/join)
+            if (['lobby', 'voting'].includes(savedScreen) && savedData?.sessionId) {
+              setSessionData(savedData)
+              setScreen(savedScreen)
+              return
+            }
+          }
+        } catch (e) {
+          // Ignore parse errors, fall through to home
+        }
         setScreen('home')
       }
     })
   }, [])
 
-  function go(screen, data = {}) {
-    setSessionData(prev => ({ ...prev, ...data }))
-    setScreen(screen)
+  function go(targetScreen, data = {}) {
+    setSessionData(prev => {
+      const next = { ...prev, ...data }
+      // Persist active session screens to survive reload
+      if (['lobby', 'voting'].includes(targetScreen)) {
+        try {
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ screen: targetScreen, sessionData: next }))
+        } catch (e) {}
+      } else {
+        // Clear when leaving active session (home, results, admin)
+        sessionStorage.removeItem(SESSION_KEY)
+      }
+      return next
+    })
+    setScreen(targetScreen)
   }
 
   const props = { sessionData, go }
