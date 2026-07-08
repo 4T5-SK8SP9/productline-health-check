@@ -142,8 +142,8 @@ export default function Voting({ sessionData, go }) {
         </div>
 
         {/* Vote buttons */}
-        {!revealed && (
-          <div style={{ marginBottom: '1.25rem' }}>
+        {!revealed && !(isFacilitator && !session.facilitatorVotes) && (
+  <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, textAlign: 'center' }}>
               {hasVoted ? '✓ Vote submitted — waiting for others' : 'Select your score'}
             </div>
