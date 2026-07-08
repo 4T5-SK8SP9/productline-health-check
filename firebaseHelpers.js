@@ -11,22 +11,24 @@ export function getJoinUrl(code) {
   return `${base}?join=${code}`
 }
 
-export async function createSession({ teamName, facilitatorName }) {
+export async function createSession({ teamName, facilitatorName, facilitatorVotes = false }) {
   const code = generateCode()
   const sessionRef = ref(db, `sessions/${code}`)
+
+  // Only add facilitator to members if they are voting
+  const members = facilitatorVotes
+    ? { [sanitizeName(facilitatorName)]: { name: facilitatorName, joinedAt: serverTimestamp() } }
+    : {}
+
   await set(sessionRef, {
     teamName,
     facilitator: facilitatorName,
+    facilitatorVotes,
     status: 'lobby',
     currentQuestion: 0,
     currentRound: 1,
     createdAt: serverTimestamp(),
-    members: {
-      [sanitizeName(facilitatorName)]: {
-        name: facilitatorName,
-        joinedAt: serverTimestamp()
-      }
-    }
+    members
   })
   return code
 }
