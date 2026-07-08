@@ -364,7 +364,7 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
   </head><body>
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #111827;">
     <div>
-      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Team Health Check</div>
+     <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Product Line Health Check</div>
       <div style="font-size:24px;font-weight:700;">${session.teamName}</div>
       <div style="font-size:13px;color:#6B7280;margin-top:4px;">${dateStr}</div>
       <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">Participants: ${members.join(', ')}</div>
