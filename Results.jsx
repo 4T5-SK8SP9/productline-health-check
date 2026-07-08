@@ -276,12 +276,12 @@ export default function Results({ sessionData, go }) {
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 600, minWidth: 16, color: isLow ? '#DC2626' : 'var(--text)' }}>{qData?.score ?? '—'}</span>
                     </div>
-                    {hasRound2 && showAllVotes && (
-                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
-                        <span style={{ fontWeight: 500 }}>R1:</span> {Object.values(qData.round1Votes).map(v => v.score).sort((a,b) => a-b).join(', ')} &nbsp;
-                        <span style={{ fontWeight: 500 }}>R2:</span> {Object.values(qData.round2Votes).map(v => v.score).sort((a,b) => a-b).join(', ')}
-                      </div>
-                    )}
+                  {showAllVotes && Object.keys(qData.round1Votes).length > 0 && (
+  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)', display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <div><span style={{ fontWeight: 500 }}>R1:</span> {Object.values(qData.round1Votes).map(v => v.score).sort((a,b) => a-b).join(', ')}</div>
+    {hasRound2 && <div><span style={{ fontWeight: 500 }}>R2:</span> {Object.values(qData.round2Votes).map(v => v.score).sort((a,b) => a-b).join(', ')}</div>}
+  </div>
+)}
                   </div>
                 )
               })}
