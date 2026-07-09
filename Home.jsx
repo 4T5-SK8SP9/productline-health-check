@@ -36,12 +36,12 @@ const FACILITATOR_STEPS = [
   {
     n: '7',
     title: 'Start Round 2',
-    desc: 'Say: "Consider what was just shared — now give your final vote." Open Round 2 voting. The lowest score from Round 2 is recorded as the team\'s score for this question.'
+    desc: 'Say: "Consider what was just shared — now give your final vote." Open Round 2 voting. The lowest score from Round 2 is recorded as the Product Line\'s score for this question.'
   },
   {
     n: '8',
     title: 'Why the lowest score?',
-    desc: 'Participants may ask why the lowest score wins instead of an average. The answer: "If even one person on the team scores this low, the team needs to address it — regardless of what the majority scored."'
+    desc: 'Participants may ask why the lowest score wins instead of an average. The answer: "If even one representative scores this low, the Product Line needs to address it — regardless of what the majority scored."'
   },
   {
     n: '9',
@@ -52,10 +52,10 @@ const FACILITATOR_STEPS = [
 
 export default function Home({ go }) {
   const [categories, setCategories] = useState([
-    { name: 'Team Structure', color: '#2D6A4F', questions: Array(6) },
+    { name: 'Product Line Structure', color: '#2D6A4F', questions: Array(6) },
     { name: 'Product Focus', color: '#1B4F72', questions: Array(6) },
-    { name: 'Team Process', color: '#6B2D8B', questions: Array(7) },
-    { name: 'Technical Disciplines', color: '#7D3C0A', questions: Array(6) },
+    { name: 'Product Line Process', color: '#6B2D8B', questions: Array(7) },
+    { name: 'Technical Disciplines', color: '#7D3C0A', questions: Array(4) },
   ])
   const [guideOpen, setGuideOpen] = useState(false)
 
@@ -66,10 +66,10 @@ export default function Home({ go }) {
   return (
     <div className="page" style={{ paddingTop: '3rem' }}>
       <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 12 }}>Team Health Check</div>
-        <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.25, marginBottom: 12 }}>How healthy is your team?</h1>
+        <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 12 }}>Product Line Health Check</div>
+        <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.25, marginBottom: 12 }}>How healthy is your Product Line?</h1>
         <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.65 }}>
-          {categories.reduce((sum, c) => sum + c.questions.length, 0)} questions across {categories.length} dimensions. Everyone votes anonymously on their own device.
+          {categories.reduce((sum, c) => sum + c.questions.length, 0)} questions across {categories.length} dimensions. Representatives vote anonymously on their own device.
           Votes reveal only when everyone has answered. Lowest score is final.
         </p>
       </div>
@@ -113,7 +113,7 @@ export default function Home({ go }) {
       </div>
       <p style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', lineHeight: 1.5 }}>
         Facilitator creates a session and shares the code.<br />
-        Team members join on their own devices.
+        Representatives join on their own devices.
       </p>
       <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
         <button onClick={() => go('admin')} style={{ background: 'none', border: 'none', fontSize: 12, color: 'var(--text3)', cursor: 'pointer' }}>
