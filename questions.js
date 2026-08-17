@@ -1,60 +1,125 @@
 export const DEFAULT_CATEGORIES = [
   {
-    id: "team-structure",
-    name: "Team Structure",
+    id: "better",
+    name: "Better",
     color: "#2D6A4F",
     order: 0,
     questions: [
-      { id: "ts1", title: "Do we have a common set of rules in the team?", negative: "We have close to no rules in common and those we have are not followed", positive: "We have agreed on common rules for the team and everyone have been following these for a while" },
-      { id: "ts2", title: "How much do we trust and rely on each other?", negative: "We work mostly individually, rarely ask for help or share openly", positive: "We openly depend on each other, share failures and wins, and have each other's backs" },
-      { id: "ts3", title: "To what extent are our competences divided between us?", negative: "We are all individual specialists with a sharp line between assignments — we rarely work outside our own area", positive: "We are all able to contribute to each other's assignments and help each other get things done" },
-      { id: "ts4", title: "How well do we communicate and stay aligned day-to-day?", negative: "We often find out about decisions or blockers too late — communication is fragmented", positive: "We have a rhythm that keeps everyone informed and aligned without over-meeting" },
-      { id: "ts5", title: "How do we cooperate on common deliveries with other teams?", negative: "Cooperation is hard and requires a lot of planning — we often wait for each other", positive: "We have smooth cooperation, with common focus and quick response time for each team's requests" },
-      { id: "ts6", title: "To what extent are we able, within the team, to deliver value end-to-end?", negative: "We are very dependent on people outside our team and we are missing key people inside our team", positive: "We are a full stack team with the right people, enabling us to deliver value without any external dependencies" }
+      {
+        id: "b1",
+        title: "How well do we satisfy our customers?",
+        crawl: "We do not meet expectations and only find out after releases.",
+        walk: "We verify that expectations are met every second week.",
+        run: "We exceed expectations by shaping work before implementation.",
+        fly: "We often anticipate their expectations."
+      },
+      {
+        id: "b2",
+        title: "How well do we track progress?",
+        crawl: "We do not have one way of tracking progress.",
+        walk: "We track deliverables.",
+        run: "We track whether our product is used.",
+        fly: "We track achieved outcomes."
+      },
+      {
+        id: "b3",
+        title: "How much do we challenge requests?",
+        crawl: "We uncritically deliver most requests.",
+        walk: "We question some assumptions.",
+        run: "We validate significant hypotheses.",
+        fly: "We run experiments on requests as well as our own ideas."
+      }
     ]
   },
   {
-    id: "product-focus",
-    name: "Product Focus",
+    id: "faster",
+    name: "Faster",
     color: "#1B4F72",
     order: 1,
     questions: [
-      { id: "pf1", title: "Is there a clear vision of the product we are developing?", negative: "The purpose and vision of the product is unclear and it is difficult for us to navigate by", positive: "There is a simple, clear and convincing vision that we all know and use actively to navigate after" },
-      { id: "pf2", title: "How good are we at continuously delivering value?", negative: "Our tasks span over a long period of time and there is a long-term transition between our deliveries", positive: "There is a short time from idea to delivery — we can often deliver ready-made deliveries that create value for our recipients" },
-      { id: "pf3", title: "Do we have common built-in quality standards?", negative: "We do not know about the organisation's expectations for quality and have none in common in the team", positive: "Our deliveries comply with common standards and meet the organisation's expectations, even when we are in a hurry" },
-      { id: "pf4", title: "How well do we understand what we're building before we start?", negative: "We often jump into work without shared understanding — requirements emerge as we go", positive: "Before we start anything, the whole team has a clear picture of what, why and for whom" },
-      { id: "pf5", title: "How many tasks do we work on at the same time?", negative: "We have no focus on minimising the number of tasks in progress — often working on multiple tasks at the same time", positive: "There are only so many tasks in progress that we can keep daily progress on them — mostly we only work on one task at a time" },
-      { id: "pf6", title: "Do we focus on minimising our cycle time?", negative: "There often goes a long time from starting a task until it is developed and tested", positive: "We work in a structured way to reduce the time from getting started with a task until it's finished" }
+      {
+        id: "f1",
+        title: "How frequently do we deploy new features?",
+        crawl: "We deploy every quarter.",
+        walk: "We deploy every month.",
+        run: "We deploy every second week.",
+        fly: "We deploy each feature individually on demand."
+      },
+      {
+        id: "f2",
+        title: "How objectively do we decide?",
+        crawl: "We mainly decide based on opinions.",
+        walk: "We mainly decide based on experience.",
+        run: "We mainly decide based on experience and data.",
+        fly: "We mainly decide based on experience, data and feedback."
+      },
+      {
+        id: "f3",
+        title: "How well do we handle unplanned requests?",
+        crawl: "We are too busy to consider anything unplanned.",
+        walk: "We only have time for critical defects.",
+        run: "We have time for defects, and unidentified dependencies and risks.",
+        fly: "We assess new requests and adjust priorities without disrupting flow."
+      }
     ]
   },
   {
-    id: "team-process",
-    name: "Team Process",
-    color: "#6B2D8B",
+    id: "safer",
+    name: "Safer",
+    color: "#7D3C0A",
     order: 2,
     questions: [
-      { id: "tp1", title: "Are we talking together about our work in progress?", negative: "We only rarely talk about what we each do or how we can help each other", positive: "We have found a perfect way to coordinate our work, which minimises surprises and ensures that we help each other" },
-      { id: "tp2", title: "Are we planning our work ourselves?", negative: "The work is typically planned for us and we cannot influence priorities or deliverables", positive: "We plan all the work ourselves and take joint ownership of our plans and goals" },
-      { id: "tp3", title: "How often do we show stakeholders what we deliver?", negative: "We do not show anything — if that happens it's random or unstructured", positive: "We regularly involve stakeholders and work closely with them, often discovering unexpected value by showing our work" },
-      { id: "tp4", title: "How good are we at constantly improving the way we work?", negative: "We never allow time to reflect or discuss how we can improve our way of working", positive: "We have a constant focus on improving the way we work — everyone participates, proposals are discussed and we adapt effectively" },
-      { id: "tp5", title: "How strong is our relationship with our stakeholders?", negative: "We deliver to stakeholders but rarely have a real dialogue — feedback is scarce or late", positive: "We have ongoing, trusted relationships — stakeholders are engaged partners, not just recipients" },
-      { id: "tp6", title: "Do we act on data to improve — or just collect it?", negative: "We have little data, and when we do, it rarely changes how we work", positive: "We regularly review team and product data and make concrete changes based on what we learn" },
-      { id: "tp7", title: "Can we speak up, disagree and fail safely in this team?", negative: "People hold back opinions, mistakes are blamed, and conflict is avoided rather than resolved", positive: "Everyone speaks up, disagreement is welcomed, and mistakes are treated as learning" }
+      {
+        id: "s1",
+        title: "How early do we catch quality issues?",
+        crawl: "Incidents appear in production.",
+        walk: "Incidents are found manually when deploying.",
+        run: "Incidents are caught with automation when integrating.",
+        fly: "Incidents are prevented throughout."
+      }
     ]
   },
   {
-    id: "technical-disciplines",
-    name: "Technical Disciplines",
-    color: "#7D3C0A",
+    id: "happier",
+    name: "Happier",
+    color: "#6B2D8B",
     order: 3,
     questions: [
-      { id: "td1", title: "To what extent can we make decisions about solutions ourselves?", negative: "Many decisions about solution architecture, UI/UX and business rules must be approved by key people outside our team", positive: "We have a high degree of freedom to make such decisions as long as we respect common agreements and standards" },
-      { id: "td2", title: "Are we good at using different types of tests?", negative: "We perform almost only manual, functional tests", positive: "Our tests cover both the technical and the business, wide and deep, with a high degree of automation" },
-      { id: "td3", title: "How much do we use automation?", negative: "Almost everything is done manually — there are no plans to automate testing, build, integration or deployment", positive: "We have automated many of our processes and get great value from it — we continue to look for more places to automate" },
-      { id: "td4", title: "Do we actively manage technical debt and quality culture?", negative: "We keep shipping without cleaning up — debt accumulates and slows us down", positive: "Quality and sustainability are built into how we work, not treated as extras" }
+      {
+        id: "h1",
+        title: "How well do we empower teams?",
+        crawl: "The teams are told what to do and how.",
+        walk: "The teams decide how they work, but not on what.",
+        run: "The teams decide how they work and what to work on toward a given goal.",
+        fly: "The teams decide how they work, what to work on, and their goals."
+      },
+      {
+        id: "h2",
+        title: "How sustainable is our workload?",
+        crawl: "Workload is often unsustainable for most people.",
+        walk: "Workload is unsustainable for key people at releases or peak.",
+        run: "Workload is stable and sustainable, and evenly distributed within teams.",
+        fly: "Workload is stable, sustainable, and evenly distributed across teams."
+      },
+      {
+        id: "h3",
+        title: "How effectively do we improve our ways of working?",
+        crawl: "We rarely improve.",
+        walk: "We remove surface issues every quarter.",
+        run: "We remove underlying problems every second week.",
+        fly: "We remove root-causes immediately when issues are identified."
+      }
     ]
   }
 ]
+
+export const CWRF_LABELS = ['Crawl', 'Walk', 'Run', 'Fly']
+export const CWRF_COLORS = ['#DC2626', '#EA580C', '#2563EB', '#16A34A']
+export const CWRF_BGS = ['#FEF2F2', '#FFF7ED', '#EFF6FF', '#F0FDF4']
+
+export function scoreToLabel(score) {
+  return CWRF_LABELS[score - 1] ?? score
+}
 
 // Load categories from Firebase, fall back to defaults
 export async function loadCategories(db) {
