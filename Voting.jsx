@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { listenSession, submitVote, advanceQuestion, startRound2, sanitizeName,
-  getVotesForRound, allMembersVoted, allVotesIdentical, getLowestScore } from './firebaseHelpers.js'
+  getVotesForRound, allMembersVoted, allVotesIdentical, getAverageScore, getRawAverage } from './firebaseHelpers.js'
 import { ALL_QUESTIONS, TOTAL_QUESTIONS, CATEGORIES, CWRF_LABELS, CWRF_COLORS, CWRF_BGS, scoreToLabel } from './questions.js'
 
 const SCORES = [1, 2, 3, 4]
@@ -83,10 +83,9 @@ export default function Voting({ sessionData, go }) {
   const totalCount = members.length
   const myKey = sanitizeName(memberName)
   const hasVoted = !!votes[myKey]
-  const lowestScore = getLowestScore(session, qIdx, round)
+  const resultScore = getAverageScore(session, qIdx, round)
+  const rawAverage = getRawAverage(session, qIdx, round)
   const cat = CATEGORIES.find(c => c.id === question.categoryId)
-  const lowestVoters = revealed ? Object.values(votes).filter(v => v.score === lowestScore).map(v => v.name) : []
-
   const cwrfDescriptions = [question.crawl, question.walk, question.run, question.fly]
 
   return (
@@ -206,7 +205,7 @@ export default function Voting({ sessionData, go }) {
               <div style={{ textAlign: 'center', padding: '16px', background: '#F0FDF4', border: '2px solid #16A34A', borderRadius: 'var(--radius)', marginBottom: '1rem' }}>
                 <div style={{ fontSize: 20 }}>🎯</div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: '#14532D', marginBottom: 4 }}>Perfect alignment!</div>
-                <div style={{ fontSize: 13, color: '#166534' }}>Everyone chose {scoreToLabel(lowestScore)} — moving to next question</div>
+                <div style={{ fontSize: 13, color: '#166534' }}>Everyone chose {scoreToLabel(resultScore)} — moving to next question</div>
               </div>
             )}
 
@@ -217,9 +216,11 @@ export default function Voting({ sessionData, go }) {
                     <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 2 }}>
                       {round === 1 ? 'Round 1 results' : 'Round 2 results — Final'}
                     </div>
-                    <div style={{ fontSize: 28, fontWeight: 600, color: CWRF_COLORS[lowestScore-1] }}>
-                      Lowest: {scoreToLabel(lowestScore)}
-                      <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 400, marginLeft: 8 }}>from {lowestVoters.join(', ')}</span>
+                    <div style={{ fontSize: 28, fontWeight: 600, color: resultScore ? CWRF_COLORS[resultScore-1] : cat?.color }}>
+                      Result: {scoreToLabel(resultScore)}
+                      <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 400, marginLeft: 8 }}>
+                        (avg {rawAverage?.toFixed(1)} → rounded down)
+                      </span>
                     </div>
                   </div>
                 </div>
