@@ -30,8 +30,8 @@ const FACILITATOR_STEPS = [
   },
   {
     n: '6',
-    title: 'Split votes → discuss',
-    desc: 'If votes differ, hear from at least one low scorer and one high scorer before Round 2. Try: "Why you gave a 2 — what's behind that?" or "What would move you from a 4 to a 5?" Be mindful of time — no deep dives.'
+    title: 'Split votes → discuss'xx
+    desc: `If votes differ, hear from at least one low scorer and one high scorer before Round 2. Try: "Why you gave a xx — what's behind that?" or "What would move you from a xx to a xx?" Be mindful of time — no deep dives.`
   },
   {
     n: '7',
