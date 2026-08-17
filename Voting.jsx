@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { listenSession, submitVote, advanceQuestion, startRound2, sanitizeName,
   getVotesForRound, allMembersVoted, allVotesIdentical, getLowestScore } from './firebaseHelpers.js'
-import { ALL_QUESTIONS, TOTAL_QUESTIONS, CATEGORIES } from './questions.js'
+import { ALL_QUESTIONS, TOTAL_QUESTIONS, CATEGORIES, CWRF_LABELS, CWRF_COLORS, CWRF_BGS, scoreToLabel } from './questions.js'
+
+const SCORES = [1, 2, 3, 4]
 
 function VoteDistribution({ votes, color }) {
   const scores = Object.values(votes).map(v => v.score)
-  const total = scores.length
-  const counts = [1,2,3,4,5].map(v => ({ v, count: scores.filter(s => s === v).length }))
+  const counts = SCORES.map(v => ({ v, count: scores.filter(s => s === v).length }))
   const maxCount = Math.max(...counts.map(c => c.count), 1)
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
       {counts.map(({ v, count }) => (
         <div key={v} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: count > 0 ? color : 'var(--text3)' }}>{count > 0 ? count : ''}</div>
-          <div style={{ width: '100%', background: count > 0 ? color : 'var(--border)', borderRadius: '4px 4px 0 0', height: `${Math.max((count / maxCount) * 40, count > 0 ? 6 : 2)}px`, transition: 'height 0.4s ease', opacity: count > 0 ? 1 : 0.3 }} />
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontWeight: 500 }}>{v}</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: count > 0 ? CWRF_COLORS[v-1] : 'var(--text3)' }}>{count > 0 ? count : ''}</div>
+          <div style={{ width: '100%', background: count > 0 ? CWRF_COLORS[v-1] : 'var(--border)', borderRadius: '4px 4px 0 0', height: `${Math.max((count / maxCount) * 40, count > 0 ? 6 : 2)}px`, transition: 'height 0.4s ease', opacity: count > 0 ? 1 : 0.3 }} />
+          <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500 }}>{CWRF_LABELS[v-1]}</div>
         </div>
       ))}
     </div>
@@ -60,7 +61,6 @@ export default function Voting({ sessionData, go }) {
             setTimeout(() => advanceQuestion({ code: sessionId, nextIndex: qIdx + 1, totalQuestions: TOTAL_QUESTIONS }), 3000)
           }
         }
-        // If not identical and round 1, facilitator controls round 2
       }
     })
     return () => unsub()
@@ -84,9 +84,10 @@ export default function Voting({ sessionData, go }) {
   const myKey = sanitizeName(memberName)
   const hasVoted = !!votes[myKey]
   const lowestScore = getLowestScore(session, qIdx, round)
-  const identical = allVotesIdentical(session, qIdx, round)
   const cat = CATEGORIES.find(c => c.id === question.categoryId)
   const lowestVoters = revealed ? Object.values(votes).filter(v => v.score === lowestScore).map(v => v.name) : []
+
+  const cwrfDescriptions = [question.crawl, question.walk, question.run, question.fly]
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -129,34 +130,50 @@ export default function Voting({ sessionData, go }) {
         {/* Question */}
         <h2 style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.35, marginBottom: '1.25rem' }}>{question.title}</h2>
 
-        {/* Extremes */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '1.25rem' }}>
-          <div style={{ padding: '10px 12px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 'var(--radius-sm)', fontSize: 11, color: '#7F1D1D', lineHeight: 1.5 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginBottom: 3 }}>SCORE 1</div>
-            {question.negative}
-          </div>
-          <div style={{ padding: '10px 12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 'var(--radius-sm)', fontSize: 11, color: '#14532D', lineHeight: 1.5 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#16A34A', marginBottom: 3 }}>SCORE 5</div>
-            {question.positive}
-          </div>
-        </div>
-
-        {/* Vote buttons */}
+        {/* CWRF Vote cards */}
         {!revealed && !(isFacilitator && !session.facilitatorVotes) && (
-  <div style={{ marginBottom: '1.25rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, textAlign: 'center' }}>
-              {hasVoted ? '✓ Vote submitted — waiting for others' : 'Select your score'}
+              {hasVoted ? '✓ Vote submitted — waiting for others' : 'Select where you are today'}
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {[1,2,3,4,5].map(v => {
-                const colors = ['#DC2626','#EA580C','#CA8A04','#16A34A','#15803D']
-                const bgs = ['#FEF2F2','#FFF7ED','#FEFCE8','#F0FDF4','#DCFCE7']
+            <div style={{ display: 'grid', gap: 8 }}>
+              {SCORES.map(v => {
+                const label = CWRF_LABELS[v-1]
+                const color = CWRF_COLORS[v-1]
+                const bg = CWRF_BGS[v-1]
+                const desc = cwrfDescriptions[v-1]
                 const isSelected = myVote === v
                 return (
-                  <button key={v} onClick={() => { if (hasVoted) return; setMyVote(v); submitVote({ code: sessionId, memberName, questionIndex: qIdx, round, score: v }) }}
+                  <button
+                    key={v}
+                    onClick={() => { if (hasVoted) return; setMyVote(v); submitVote({ code: sessionId, memberName, questionIndex: qIdx, round, score: v }) }}
                     disabled={hasVoted}
-                    style={{ flex: 1, height: 64, border: isSelected ? `2px solid ${colors[v-1]}` : '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', background: isSelected ? bgs[v-1] : 'var(--surface)', color: isSelected ? colors[v-1] : 'var(--text2)', fontSize: 22, fontWeight: 600, transition: 'all 0.15s', transform: isSelected ? 'scale(1.06)' : 'scale(1)', cursor: hasVoted ? 'default' : 'pointer' }}>
-                    {v}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      padding: '12px 16px',
+                      border: isSelected ? `2px solid ${color}` : '1.5px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      background: isSelected ? bg : 'var(--surface)',
+                      cursor: hasVoted ? 'default' : 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s',
+                      transform: isSelected ? 'scale(1.01)' : 'scale(1)'
+                    }}
+                  >
+                    <div style={{
+                      minWidth: 52, height: 36, borderRadius: 6,
+                      background: isSelected ? color : 'var(--surface2)',
+                      border: `1.5px solid ${isSelected ? color : 'var(--border)'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 11, fontWeight: 700,
+                      color: isSelected ? '#fff' : color,
+                      letterSpacing: '0.04em', flexShrink: 0
+                    }}>
+                      {label.toUpperCase()}
+                    </div>
+                    <div style={{ fontSize: 13, color: isSelected ? color : 'var(--text2)', lineHeight: 1.45, fontWeight: isSelected ? 500 : 400 }}>
+                      {desc}
+                    </div>
                   </button>
                 )
               })}
@@ -185,16 +202,14 @@ export default function Voting({ sessionData, go }) {
         {/* Reveal */}
         {revealed && (
           <div style={{ animation: 'fadeIn 0.4s ease' }}>
-            {/* Perfect alignment */}
             {perfectAlignment && (
               <div style={{ textAlign: 'center', padding: '16px', background: '#F0FDF4', border: '2px solid #16A34A', borderRadius: 'var(--radius)', marginBottom: '1rem' }}>
                 <div style={{ fontSize: 20 }}>🎯</div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: '#14532D', marginBottom: 4 }}>Perfect alignment!</div>
-                <div style={{ fontSize: 13, color: '#166534' }}>Everyone scored {lowestScore} — moving to next question</div>
+                <div style={{ fontSize: 13, color: '#166534' }}>Everyone chose {scoreToLabel(lowestScore)} — moving to next question</div>
               </div>
             )}
 
-            {/* Vote distribution */}
             {!perfectAlignment && (
               <div style={{ background: 'var(--surface)', border: `2px solid ${cat?.color}`, borderRadius: 'var(--radius)', padding: '16px 20px', marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -202,8 +217,8 @@ export default function Voting({ sessionData, go }) {
                     <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 2 }}>
                       {round === 1 ? 'Round 1 results' : 'Round 2 results — Final'}
                     </div>
-                    <div style={{ fontSize: 28, fontWeight: 600, color: cat?.color }}>
-                      Lowest: {lowestScore}
+                    <div style={{ fontSize: 28, fontWeight: 600, color: CWRF_COLORS[lowestScore-1] }}>
+                      Lowest: {scoreToLabel(lowestScore)}
                       <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 400, marginLeft: 8 }}>from {lowestVoters.join(', ')}</span>
                     </div>
                   </div>
@@ -211,11 +226,10 @@ export default function Voting({ sessionData, go }) {
 
                 <VoteDistribution votes={votes} color={cat?.color} />
 
-                {/* Individual votes */}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                   {Object.values(votes).sort((a,b) => a.score - b.score).map((v, i) => (
-                    <div key={i} style={{ textAlign: 'center', padding: '6px 10px', background: 'var(--surface2)', borderRadius: 6, minWidth: 48 }}>
-                      <div style={{ fontSize: 18, fontWeight: 600 }}>{v.score}</div>
+                    <div key={i} style={{ textAlign: 'center', padding: '6px 10px', background: CWRF_BGS[v.score-1], border: `1px solid ${CWRF_COLORS[v.score-1]}`, borderRadius: 6, minWidth: 56 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: CWRF_COLORS[v.score-1] }}>{scoreToLabel(v.score)}</div>
                       <div style={{ fontSize: 11, color: 'var(--text3)' }}>{v.name}</div>
                     </div>
                   ))}
@@ -223,7 +237,6 @@ export default function Voting({ sessionData, go }) {
               </div>
             )}
 
-            {/* Facilitator controls */}
             {isFacilitator && !perfectAlignment && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: '1rem' }}>
                 {round === 1 ? (
