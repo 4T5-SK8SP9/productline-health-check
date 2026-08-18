@@ -6,9 +6,8 @@ import {
   loadAdminCategories, saveCategories, resetToDefaults, generateId
 } from './adminHelpers.js'
 
-// ── Top-level Admin shell ─────────────────────────────────────────────────────
 export default function Admin({ go }) {
-  const [user, setUser] = useState(undefined) // undefined = loading
+  const [user, setUser] = useState(undefined)
   const [adminStatus, setAdminStatus] = useState(null)
   const [tab, setTab] = useState('questions')
 
@@ -61,16 +60,14 @@ export default function Admin({ go }) {
   )
 }
 
-// ── Loading ───────────────────────────────────────────────────────────────────
 function LoadingScreen() {
   return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: 'var(--text3)', fontSize: 14 }}>Loading…</div>
 }
 
-// ── Login ─────────────────────────────────────────────────────────────────────
 function AdminLogin({ setUser, setAdminStatus, go }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [mode, setMode] = useState('login') // login | register
+  const [mode, setMode] = useState('login')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -99,7 +96,7 @@ function AdminLogin({ setUser, setAdminStatus, go }) {
   return (
     <div className="page" style={{ paddingTop: '3rem', maxWidth: 400 }}>
       <button onClick={() => go('home')} style={{ background: 'none', border: 'none', color: 'var(--text3)', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: '1.5rem' }}>← Back to app</button>
-      <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 8 }}>Team Health Check</div>
+      <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', color: 'var(--text3)', textTransform: 'uppercase', marginBottom: 8 }}>Product Line Health Check</div>
       <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 6 }}>{mode === 'login' ? 'Admin sign in' : 'Create first admin'}</h2>
       <p style={{ fontSize: 14, color: 'var(--text2)', marginBottom: '2rem', lineHeight: 1.5 }}>
         {mode === 'login' ? 'Sign in to manage questions and admin users.' : 'Register the first superadmin account for this tool.'}
@@ -119,13 +116,19 @@ function AdminLogin({ setUser, setAdminStatus, go }) {
   )
 }
 
-// ── Question Editor ───────────────────────────────────────────────────────────
+// CWRF field config
+const CWRF_FIELDS = [
+  { key: 'crawl', label: 'CRAWL', sublabel: 'Score 1 — lowest', color: '#DC2626', border: '#FECACA', bg: '#FEF2F2' },
+  { key: 'walk',  label: 'WALK',  sublabel: 'Score 2',          color: '#EA580C', border: '#FED7AA', bg: '#FFF7ED' },
+  { key: 'run',   label: 'RUN',   sublabel: 'Score 3',          color: '#2563EB', border: '#BFDBFE', bg: '#EFF6FF' },
+  { key: 'fly',   label: 'FLY',   sublabel: 'Score 4 — highest', color: '#16A34A', border: '#BBF7D0', bg: '#F0FDF4' },
+]
+
 function QuestionEditor() {
   const [categories, setCategories] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [expandedCat, setExpandedCat] = useState(null)
-  const [editingQ, setEditingQ] = useState(null) // { catId, qId } or null
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [showNewCat, setShowNewCat] = useState(false)
@@ -171,9 +174,8 @@ function QuestionEditor() {
   }
 
   function addQuestion(catId) {
-    const newQ = { id: generateId('q'), title: '', negative: '', positive: '' }
+    const newQ = { id: generateId('q'), title: '', crawl: '', walk: '', run: '', fly: '' }
     setCategories(prev => prev.map(cat => cat.id !== catId ? cat : { ...cat, questions: [...cat.questions, newQ] }))
-    setEditingQ({ catId, qId: newQ.id })
   }
 
   function updateCategoryName(catId, name) {
@@ -236,7 +238,6 @@ function QuestionEditor() {
 
       {categories.map((cat, catIdx) => (
         <div key={cat.id} style={{ marginBottom: 12, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
-          {/* Category header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: expandedCat === cat.id ? '1px solid var(--border)' : 'none' }}>
             <input type="color" value={cat.color} onChange={e => updateCategoryColor(cat.id, e.target.value)} style={{ width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer', padding: 0, background: 'none' }} title="Category colour" />
             <input value={cat.name} onChange={e => updateCategoryName(cat.id, e.target.value)} style={{ flex: 1, fontSize: 14, fontWeight: 500, border: 'none', background: 'transparent', padding: '4px 0', outline: 'none', color: 'var(--text)' }} />
@@ -251,12 +252,11 @@ function QuestionEditor() {
             </div>
           </div>
 
-          {/* Questions */}
           {expandedCat === cat.id && (
             <div style={{ padding: '12px 16px' }}>
               {cat.questions.map((q, qi) => (
-                <div key={q.id} style={{ marginBottom: 10, padding: '12px 14px', background: 'var(--surface2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div key={q.id} style={{ marginBottom: 12, padding: '14px', background: 'var(--surface2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500 }}>Question {qi + 1}</span>
                       <div style={{ display: 'flex', gap: 2 }}>
@@ -266,20 +266,27 @@ function QuestionEditor() {
                     </div>
                     <button onClick={() => deleteQuestion(cat.id, q.id)} style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: 13 }} title="Delete question">✕</button>
                   </div>
-                  <div style={{ display: 'grid', gap: 8 }}>
+                  <div style={{ display: 'grid', gap: 10 }}>
                     <div>
                       <label style={{ fontSize: 11, color: 'var(--text3)', display: 'block', marginBottom: 3 }}>Question title</label>
-                      <input value={q.title} onChange={e => updateQuestion(cat.id, q.id, 'title', e.target.value)} placeholder="e.g. How well do we communicate?" style={{ fontSize: 13 }} />
+                      <input value={q.title} onChange={e => updateQuestion(cat.id, q.id, 'title', e.target.value)} placeholder="e.g. How well do we satisfy our customers?" style={{ fontSize: 13 }} />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      <div>
-                        <label style={{ fontSize: 11, color: '#DC2626', display: 'block', marginBottom: 3 }}>Score 1 (negative extreme)</label>
-                        <textarea value={q.negative} onChange={e => updateQuestion(cat.id, q.id, 'negative', e.target.value)} rows={3} style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: '1.5px solid #FECACA', borderRadius: 6, fontFamily: 'var(--font)', background: '#FEF2F2', resize: 'vertical', outline: 'none', boxSizing: 'border-box' }} />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 11, color: '#16A34A', display: 'block', marginBottom: 3 }}>Score 5 (positive extreme)</label>
-                        <textarea value={q.positive} onChange={e => updateQuestion(cat.id, q.id, 'positive', e.target.value)} rows={3} style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: '1.5px solid #BBF7D0', borderRadius: 6, fontFamily: 'var(--font)', background: '#F0FDF4', resize: 'vertical', outline: 'none', boxSizing: 'border-box' }} />
-                      </div>
+                      {CWRF_FIELDS.map(({ key, label, sublabel, color, border, bg }) => (
+                        <div key={key}>
+                          <label style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
+                            <span style={{ fontWeight: 700, color, background: bg, border: `1px solid ${border}`, borderRadius: 4, padding: '1px 6px', fontSize: 10 }}>{label}</span>
+                            <span style={{ color: 'var(--text3)' }}>{sublabel}</span>
+                          </label>
+                          <textarea
+                            value={q[key] || ''}
+                            onChange={e => updateQuestion(cat.id, q.id, key, e.target.value)}
+                            rows={3}
+                            placeholder={`Describe what ${label} looks like for this question…`}
+                            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `1.5px solid ${border}`, borderRadius: 6, fontFamily: 'var(--font)', background: bg, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -307,7 +314,6 @@ function QuestionEditor() {
   )
 }
 
-// ── Admin Users ───────────────────────────────────────────────────────────────
 function AdminUsers({ currentUser }) {
   const [admins, setAdmins] = useState([])
   const [email, setEmail] = useState('')
@@ -342,8 +348,6 @@ function AdminUsers({ currentUser }) {
   return (
     <div>
       <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: '1.25rem' }}>Admin Users</h3>
-
-      {/* Current admins */}
       <div style={{ marginBottom: '1.5rem' }}>
         {admins.map(admin => (
           <div key={admin.uid} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', marginBottom: 8 }}>
@@ -362,8 +366,6 @@ function AdminUsers({ currentUser }) {
           </div>
         ))}
       </div>
-
-      {/* Invite form */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px' }}>
         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Invite new admin</div>
         <div style={{ display: 'grid', gap: 10, marginBottom: 12 }}>
