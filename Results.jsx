@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { CATEGORIES, ALL_QUESTIONS } from './questions.js'
+import { CATEGORIES, ALL_QUESTIONS, CWRF_LABELS, CWRF_COLORS, CWRF_BGS, scoreToLabel } from './questions.js'
 import { getFinalScore } from './firebaseHelpers.js'
 
 function computeCategoryScores(session) {
@@ -18,7 +18,7 @@ function ScoreBar({ value, color }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ flex: 1, height: 7, background: '#E5E5E5', borderRadius: 4, overflow: 'hidden' }}>
-        <div style={{ width: `${(value / 5) * 100}%`, height: '100%', background: color, borderRadius: 4 }} />
+        <div style={{ width: `${(value / 4) * 100}%`, height: '100%', background: color, borderRadius: 4 }} />
       </div>
       <span style={{ fontSize: 14, fontWeight: 500, minWidth: 28 }}>{value.toFixed(1)}</span>
     </div>
@@ -61,7 +61,7 @@ export default function Results({ sessionData, go }) {
     round1Votes: session.votes?.[qIdx]?.round1 || {},
     round2Votes: session.votes?.[qIdx]?.round2 || {}
   }))
-  const lowScores = allQuestionScores.filter(q => q.score !== null && q.score <= 2)
+  const lowScores = allQuestionScores.filter(q => q.score !== null && q.score <= 1)
   const snapshot = buildSessionSnapshot(session, catScores, allQuestionScores, overall, dateStr, members)
 
   function getDelta(q) {
@@ -109,7 +109,7 @@ export default function Results({ sessionData, go }) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `team-health-${session.teamName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
+    a.download = `pl-health-${session.teamName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -153,10 +153,10 @@ export default function Results({ sessionData, go }) {
           <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--border)' }}>
             <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
               {[
-                { step: '1', title: 'Save the session data', desc: 'Click "↓ Save data" to download a .json file. This is your record for next time — without it you cannot compare results.', action: 'Save to your team SharePoint or shared folder.' },
-                { step: '2', title: 'Save the PDF report', desc: 'Click "↓ PDF" to download a printable report with all scores and focus areas.', action: 'Share with your team and any relevant stakeholders.' },
-                { step: '3', title: 'Review the transcription', desc: 'If you recorded the session, review the discussion around low-scoring questions — that is where the real insights are.', action: 'Note key themes and share back to the team.' },
-                { step: '4', title: 'Pick 1–2 focus areas', desc: 'Do not try to fix everything at once. Choose the 1–2 lowest scoring questions that the team has energy to work on.', action: 'Create a concrete action with an owner and a date.' },
+                { step: '1', title: 'Save the session data', desc: 'Click "↓ Save data" to download a .json file. This is your record for next time — without it you cannot compare results.', action: 'Save to your Product Line SharePoint or shared folder.' },
+                { step: '2', title: 'Save the PDF report', desc: 'Click "↓ PDF" to download a printable report with all scores and focus areas.', action: 'Share with representatives and relevant stakeholders.' },
+                { step: '3', title: 'Review the transcription', desc: 'If you recorded the session, review the discussion around low-scoring questions — that is where the real insights are.', action: 'Note key themes and share back to the group.' },
+                { step: '4', title: 'Pick 1–2 focus areas', desc: 'Do not try to fix everything at once. Choose the 1–2 lowest scoring questions that the group has energy to work on.', action: 'Create a concrete action with an owner and a date.' },
                 { step: '5', title: 'Schedule the next check-in', desc: 'The value comes from tracking progress over time. We recommend running the check-in every 6–8 weeks.', action: 'Book it in the calendar before you leave this session.' },
                 { step: '6', title: 'Next time — load your .json file', desc: 'When you run the next session, upload your saved .json file on the results screen to see ▲▼ score changes automatically.', action: 'Keep all .json files in your SharePoint folder.' },
               ].map(({ step, title, desc, action }) => (
@@ -202,7 +202,7 @@ export default function Results({ sessionData, go }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', marginBottom: '1.25rem' }}>
           <div style={{ textAlign: 'center', minWidth: 72 }}>
             <div style={{ fontSize: 42, fontWeight: 600, lineHeight: 1 }}>{overall?.toFixed(1)}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>/ 5.0</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>/ 4.0</div>
             {overallDelta !== null && (
               <div style={{ fontSize: 13, fontWeight: 600, marginTop: 4, color: overallDelta > 0 ? '#16A34A' : overallDelta < 0 ? '#DC2626' : 'var(--text3)' }}>
                 {overallDelta > 0 ? `▲ ${overallDelta.toFixed(1)}` : `▼ ${Math.abs(overallDelta).toFixed(1)}`}
@@ -210,7 +210,7 @@ export default function Results({ sessionData, go }) {
             )}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Overall team health</div>
+            <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Overall Product Line health</div>
             <div style={{ display: 'grid', gap: 8 }}>
               {CATEGORIES.map(cat => {
                 const delta = getCatDelta(cat)
@@ -228,11 +228,11 @@ export default function Results({ sessionData, go }) {
           </div>
         </div>
 
-        {/* Focus areas */}
+        {/* Focus areas — Crawl scores only */}
         {lowScores.length > 0 && (
           <div style={{ padding: '14px 18px', background: '#FEF9EC', border: '1px solid #FDE68A', borderRadius: 'var(--radius)', marginBottom: '1.25rem' }}>
             <div style={{ fontSize: 13, fontWeight: 500, color: '#92400E', marginBottom: 8 }}>
-              🎯 {lowScores.length} area{lowScores.length > 1 ? 's' : ''} to focus on (score ≤ 2)
+              🎯 {lowScores.length} area{lowScores.length > 1 ? 's' : ''} to focus on (scored Crawl)
             </div>
             <div style={{ display: 'grid', gap: 6 }}>
               {lowScores.map(q => {
@@ -240,9 +240,9 @@ export default function Results({ sessionData, go }) {
                 return (
                   <div key={q.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
                     <span>{q.title}</span>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                       {delta !== null && <span style={{ fontSize: 11, fontWeight: 600, color: delta > 0 ? '#16A34A' : '#DC2626' }}>{delta > 0 ? `▲${delta.toFixed(1)}` : `▼${Math.abs(delta).toFixed(1)}`}</span>}
-                      <span style={{ fontWeight: 600, color: '#DC2626' }}>{q.score}</span>
+                      <span style={{ fontWeight: 700, fontSize: 11, color: '#DC2626', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 4, padding: '2px 6px' }}>CRAWL</span>
                     </div>
                   </div>
                 )
@@ -264,24 +264,27 @@ export default function Results({ sessionData, go }) {
               {cat.questions.map(q => {
                 const qData = allQuestionScores.find(aq => aq.id === q.id)
                 const delta = getDelta(qData)
-                const isLow = qData?.score !== null && qData?.score <= 2
+                const isCrawl = qData?.score === 1
                 const hasRound2 = qData && Object.keys(qData.round2Votes).length > 0
+                const scoreColor = qData?.score ? CWRF_COLORS[qData.score - 1] : 'var(--text)'
                 return (
-                  <div key={q.id} style={{ padding: '10px 14px', background: isLow ? '#FEF2F2' : 'var(--surface)', border: `1px solid ${isLow ? '#FECACA' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)' }}>
+                  <div key={q.id} style={{ padding: '10px 14px', background: isCrawl ? '#FEF2F2' : 'var(--surface)', border: `1px solid ${isCrawl ? '#FECACA' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <div style={{ flex: 1, fontSize: 13, lineHeight: 1.3 }}>{q.title}</div>
                       {delta !== null && <span style={{ fontSize: 11, fontWeight: 600, color: delta > 0 ? '#16A34A' : '#DC2626', minWidth: 36, textAlign: 'right' }}>{delta > 0 ? `▲${delta.toFixed(1)}` : `▼${Math.abs(delta).toFixed(1)}`}</span>}
                       <div style={{ display: 'flex', gap: 3 }}>
-                        {[1,2,3,4,5].map(v => <div key={v} style={{ width: 14, height: 14, borderRadius: 3, background: v <= (qData?.score || 0) ? cat.color : 'var(--surface2)' }} />)}
+                        {[1,2,3,4].map(v => <div key={v} style={{ width: 14, height: 14, borderRadius: 3, background: v <= (qData?.score || 0) ? cat.color : 'var(--surface2)' }} />)}
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 600, minWidth: 16, color: isLow ? '#DC2626' : 'var(--text)' }}>{qData?.score ?? '—'}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: scoreColor, background: qData?.score ? CWRF_BGS[qData.score-1] : 'var(--surface2)', border: `1px solid ${scoreColor}`, borderRadius: 4, padding: '2px 6px', minWidth: 40, textAlign: 'center' }}>
+                        {qData?.score ? scoreToLabel(qData.score).toUpperCase() : '—'}
+                      </span>
                     </div>
-                  {showAllVotes && Object.keys(qData.round1Votes).length > 0 && (
-  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)', display: 'flex', flexDirection: 'column', gap: 3 }}>
-    <div><span style={{ fontWeight: 500 }}>R1:</span> {Object.values(qData.round1Votes).map(v => v.score).sort((a,b) => a-b).join(', ')}</div>
-    {hasRound2 && <div><span style={{ fontWeight: 500 }}>R2:</span> {Object.values(qData.round2Votes).map(v => v.score).sort((a,b) => a-b).join(', ')}</div>}
-  </div>
-)}
+                    {showAllVotes && Object.keys(qData.round1Votes).length > 0 && (
+                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <div><span style={{ fontWeight: 500 }}>R1:</span> {Object.values(qData.round1Votes).map(v => scoreToLabel(v.score)).join(', ')}</div>
+                        {hasRound2 && <div><span style={{ fontWeight: 500 }}>R2:</span> {Object.values(qData.round2Votes).map(v => scoreToLabel(v.score)).join(', ')}</div>}
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -290,7 +293,7 @@ export default function Results({ sessionData, go }) {
         ))}
 
         <button className="btn-secondary" onClick={() => setShowAllVotes(v => !v)} style={{ width: '100%', marginTop: '0.5rem', fontSize: 13 }}>
-          {showAllVotes ? 'Hide' : 'Show'} round scores per question
+          {showAllVotes ? 'Hide' : 'Show'} round votes per question
         </button>
 
         {prevSnapshot && (
@@ -304,6 +307,13 @@ export default function Results({ sessionData, go }) {
 }
 
 function generatePrintHTML(session, catScores, allQuestionScores, overall, dateStr, members, prevSnapshot, lowScores, getDelta, getCatDelta, overallDelta) {
+  const CWRF_LABELS_PRINT = ['Crawl', 'Walk', 'Run', 'Fly']
+  const CWRF_COLORS_PRINT = ['#DC2626', '#EA580C', '#2563EB', '#16A34A']
+
+  function scoreToLabelPrint(score) {
+    return CWRF_LABELS_PRINT[score - 1] ?? score
+  }
+
   function deltaHtml(delta) {
     if (delta === null || delta === undefined) return ''
     if (delta > 0) return ` <span style="color:#16A34A;font-weight:600;font-size:11px;">▲${delta.toFixed(1)}</span>`
@@ -312,7 +322,7 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
   }
 
   function scoreBlocks(score, color) {
-    return [1,2,3,4,5].map(v =>
+    return [1,2,3,4].map(v =>
       `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${v <= score ? (color || '#374151') : '#E5E7EB'};margin-right:2px;"></span>`
     ).join('')
   }
@@ -320,7 +330,7 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
   const catRows = CATEGORIES.map(cat => {
     const avg = catScores[cat.id]
     const delta = getCatDelta(cat)
-    const pct = avg ? (avg / 5) * 100 : 0
+    const pct = avg ? (avg / 4) * 100 : 0
     return `<div style="margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
         <div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></div><span style="font-size:12px;color:#6B7280;">${cat.name}</span></div>
@@ -335,11 +345,12 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
     const qs = cat.questions.map(q => {
       const qData = allQuestionScores.find(aq => aq.id === q.id)
       const delta = getDelta(qData)
-      const isLow = qData?.score !== null && qData?.score <= 2
+      const isCrawl = qData?.score === 1
+      const labelColor = qData?.score ? CWRF_COLORS_PRINT[qData.score - 1] : '#374151'
       return `<tr style="border-bottom:1px solid #F3F4F6;">
-        <td style="padding:8px 10px;font-size:12px;color:${isLow ? '#DC2626' : '#374151'};line-height:1.4;">${q.title}</td>
+        <td style="padding:8px 10px;font-size:12px;color:${isCrawl ? '#DC2626' : '#374151'};line-height:1.4;">${q.title}</td>
         <td style="padding:8px 10px;text-align:center;">${scoreBlocks(qData?.score || 0, cat.color)}</td>
-        <td style="padding:8px 10px;text-align:center;font-size:13px;font-weight:600;color:${isLow ? '#DC2626' : '#111827'};">${qData?.score ?? '—'}${deltaHtml(delta)}</td>
+        <td style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:${labelColor};">${qData?.score ? scoreToLabelPrint(qData.score).toUpperCase() : '—'}${deltaHtml(delta)}</td>
       </tr>`
     }).join('')
     return `<div style="margin-bottom:20px;break-inside:avoid;">
@@ -353,18 +364,18 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
   }).join('')
 
   const focusHtml = lowScores.length > 0 ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:14px 16px;margin-bottom:20px;break-inside:avoid;">
-    <div style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:8px;">Focus areas (score 2 or below)</div>
-    ${lowScores.map(q => `<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${q.title}</span><span style="font-weight:700;color:#DC2626;">${q.score}${deltaHtml(getDelta(q))}</span></div>`).join('')}
+    <div style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:8px;">Focus areas (scored Crawl)</div>
+    ${lowScores.map(q => `<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${q.title}</span><span style="font-weight:700;color:#DC2626;">CRAWL${deltaHtml(getDelta(q))}</span></div>`).join('')}
   </div>` : ''
 
   const comparedTo = prevSnapshot ? `<div style="font-size:11px;color:#9CA3AF;margin-top:16px;padding-top:12px;border-top:1px solid #F3F4F6;">Compared to: ${prevSnapshot.teamName} · ${prevSnapshot.date} · ${prevSnapshot.members?.length} participants</div>` : ''
 
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Team Health — ${session.teamName}</title>
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Product Line Health — ${session.teamName}</title>
   <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;background:white;padding:32px;}@media print{body{padding:0;}@page{margin:20mm 16mm;size:A4;}.no-print{display:none!important;}}</style>
   </head><body>
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #111827;">
     <div>
-     <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Product Line Health Check</div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Product Line Health Check</div>
       <div style="font-size:24px;font-weight:700;">${session.teamName}</div>
       <div style="font-size:13px;color:#6B7280;margin-top:4px;">${dateStr}</div>
       <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">Participants: ${members.join(', ')}</div>
@@ -372,7 +383,7 @@ function generatePrintHTML(session, catScores, allQuestionScores, overall, dateS
     <div style="text-align:right;">
       <div style="font-size:11px;color:#9CA3AF;margin-bottom:2px;">Overall score</div>
       <div style="font-size:40px;font-weight:700;line-height:1;">${overall?.toFixed(1) ?? '—'}${deltaHtml(overallDelta)}</div>
-      <div style="font-size:13px;color:#9CA3AF;">/ 5.0</div>
+      <div style="font-size:13px;color:#9CA3AF;">/ 4.0</div>
     </div>
   </div>
   <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:16px;margin-bottom:20px;break-inside:avoid;">
