@@ -15,7 +15,6 @@ export async function createSession({ teamName, facilitatorName, facilitatorVote
   const code = generateCode()
   const sessionRef = ref(db, `sessions/${code}`)
 
-  // Only add facilitator to members if they are voting
   const members = facilitatorVotes
     ? { [sanitizeName(facilitatorName)]: { name: facilitatorName, joinedAt: serverTimestamp() } }
     : {}
@@ -105,17 +104,34 @@ export function allVotesIdentical(session, questionIndex, round) {
   return scores.every(s => s === scores[0])
 }
 
+// Average rounded down — e.g. 2.75 → 2 (Walk)
+export function getAverageScore(session, questionIndex, round) {
+  const votes = getVotesForRound(session, questionIndex, round)
+  const scores = Object.values(votes).map(v => v.score)
+  if (scores.length === 0) return null
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length
+  return Math.floor(avg)
+}
+
+// Keep getLowestScore for perfect-alignment detection only
 export function getLowestScore(session, questionIndex, round) {
   const votes = getVotesForRound(session, questionIndex, round)
   const scores = Object.values(votes).map(v => v.score)
   return scores.length ? Math.min(...scores) : null
 }
 
+export function getRawAverage(session, questionIndex, round) {
+  const votes = getVotesForRound(session, questionIndex, round)
+  const scores = Object.values(votes).map(v => v.score)
+  if (scores.length === 0) return null
+  return scores.reduce((a, b) => a + b, 0) / scores.length
+}
+
+// Final score = average rounded down, preferring round 2 if it exists
 export function getFinalScore(session, questionIndex) {
   const round2Votes = getVotesForRound(session, questionIndex, 2)
-  const round1Votes = getVotesForRound(session, questionIndex, 1)
   if (Object.keys(round2Votes).length > 0) {
-    return getLowestScore(session, questionIndex, 2)
+    return getAverageScore(session, questionIndex, 2)
   }
-  return getLowestScore(session, questionIndex, 1)
+  return getAverageScore(session, questionIndex, 1)
 }
