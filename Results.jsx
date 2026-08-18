@@ -155,9 +155,9 @@ export default function Results({ sessionData, go }) {
               {[
                 { step: '1', title: 'Save the session data', desc: 'Click "↓ Save data" to download a .json file. This is your record for next time — without it you cannot compare results.', action: 'Save to your Product Line SharePoint or shared folder.' },
                 { step: '2', title: 'Save the PDF report', desc: 'Click "↓ PDF" to download a printable report with all scores and focus areas.', action: 'Share with representatives and relevant stakeholders.' },
-                { step: '3', title: 'Review the transcription', desc: 'If you recorded the session, review the discussion around low-scoring questions — that is where the real insights are.', action: 'Note key themes and share back to the group.' },
+                { step: '3', title: 'Review the transcription', desc: 'If you recorded the session, review the discussion around questions scored Crawl or Walk — that is where the real insights are.', action: 'Note key themes and share back to the group.' },
                 { step: '4', title: 'Pick 1–2 focus areas', desc: 'Do not try to fix everything at once. Choose the 1–2 lowest scoring questions that the group has energy to work on.', action: 'Create a concrete action with an owner and a date.' },
-                { step: '5', title: 'Schedule the next check-in', desc: 'The value comes from tracking progress over time. We recommend running the check-in every 6–8 weeks.', action: 'Book it in the calendar before you leave this session.' },
+                { step: '5', title: 'Schedule the next check-in', desc: 'The value comes from tracking progress over time. Run this check-in at minimum once a year — more frequently if the Product Line is going through significant change.', action: 'Book it in the calendar before you leave this session.' },
                 { step: '6', title: 'Next time — load your .json file', desc: 'When you run the next session, upload your saved .json file on the results screen to see ▲▼ score changes automatically.', action: 'Keep all .json files in your SharePoint folder.' },
               ].map(({ step, title, desc, action }) => (
                 <div key={step} style={{ display: 'flex', gap: 12 }}>
