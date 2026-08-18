@@ -4,9 +4,14 @@ import { loadCategories } from './questions.js'
 
 const FACILITATOR_STEPS = [
   {
+    n: '0',
+    title: 'Start transcript',
+    desc: 'Before anything else, enable transcription in Teams. The discussion between votes is where the real insights happen — capturing it lets the group reflect on it later.'
+  },
+  {
     n: '1',
     title: 'Read the question aloud',
-    desc: 'Read the question to the group. Give everyone 1 minute to read the score descriptions (1 = struggling, 5 = thriving).'
+    desc: 'Read the question to the group. Give everyone 1 minute to read all four descriptions — Crawl, Walk, Run and Fly.'
   },
   {
     n: '2',
@@ -21,27 +26,27 @@ const FACILITATOR_STEPS = [
   {
     n: '4',
     title: 'Reveal & let it land',
-    desc: 'Votes reveal automatically when everyone has voted. Give the group 10 seconds of silence to take in the scores before anyone speaks.'
+    desc: 'Votes reveal automatically when everyone has voted. Give the group 10 seconds of silence to take in the results before anyone speaks.'
   },
   {
     n: '5',
     title: 'Perfect alignment → move on',
-    desc: 'If all votes are the same, the tool shows a "Perfect alignment" message and advances automatically. You may still invite a brief comment before moving on.'
+    desc: 'If all votes are the same, the tool shows a "Perfect alignment" message and advances automatically. You may still invite a brief comment, or consider if you hold any contradicting data or findings worth mentioning, before moving on.'
   },
   {
     n: '6',
     title: 'Split votes → discuss',
-    desc: `If votes differ, hear from at least one low scorer and one high scorer before Round 2. Try: "Why you gave a xx — what's behind that?" or "What would move you from a xx to a xx?" Be mindful of time — no deep dives.`
+    desc: `If votes differ, hear from at least one low scorer and one high scorer before Round 2. Try: "Why you gave a Crawl — what's behind that?" or "What would move you from a Walk to a Run?" Be mindful of time — no deep dives.`
   },
   {
     n: '7',
     title: 'Start Round 2',
-    desc: 'Say: "Consider what was just shared — now give your final vote." Open Round 2 voting. The lowest score from Round 2 is recorded as the Product Line\'s score for this question.'
+    desc: 'Say: "Consider what was just shared — now give your final vote." Open Round 2 voting. The final score is the average of all votes, rounded down.'
   },
   {
     n: '8',
-    title: 'Why the lowest score?',
-    desc: 'Participants may ask why the lowest score wins instead of an average. The answer: "If even one representative scores this low, the Product Line needs to address it — regardless of what the majority scored."'
+    title: 'Why average rounded down?',
+    desc: 'Participants may ask why it\'s not just the highest score. The answer: "The average reflects the group\'s collective view — rounded down to stay honest rather than optimistic."'
   },
   {
     n: '9',
@@ -52,10 +57,10 @@ const FACILITATOR_STEPS = [
 
 export default function Home({ go }) {
   const [categories, setCategories] = useState([
-    { name: 'Product Line Structure', color: '#2D6A4F', questions: Array(6) },
-    { name: 'Product Focus', color: '#1B4F72', questions: Array(6) },
-    { name: 'Product Line Process', color: '#6B2D8B', questions: Array(7) },
-    { name: 'Technical Disciplines', color: '#7D3C0A', questions: Array(4) },
+    { name: 'Better', color: '#2D6A4F', questions: Array(3) },
+    { name: 'Faster', color: '#1B4F72', questions: Array(3) },
+    { name: 'Safer', color: '#7D3C0A', questions: Array(1) },
+    { name: 'Happier', color: '#6B2D8B', questions: Array(3) },
   ])
   const [guideOpen, setGuideOpen] = useState(false)
 
@@ -70,7 +75,7 @@ export default function Home({ go }) {
         <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.25, marginBottom: 12 }}>How healthy is your Product Line?</h1>
         <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.65 }}>
           {categories.reduce((sum, c) => sum + c.questions.length, 0)} questions across {categories.length} dimensions. Representatives vote anonymously on their own device.
-          Votes reveal only when everyone has answered. Lowest score is final.
+          Votes reveal only when everyone has answered. Average score rounded down is final.
         </p>
       </div>
 
