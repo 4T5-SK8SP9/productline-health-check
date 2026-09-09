@@ -168,7 +168,7 @@ export default function Voting({ sessionData, go }) {
                       color: isSelected ? '#fff' : color,
                       letterSpacing: '0.04em', flexShrink: 0
                     }}>
-                      {label.toUpperCase()}
+                      <span style={{ fontSize: 9, opacity: 0.6, display: 'block' }}>{v}</span>{label.toUpperCase()}
                     </div>
                     <div style={{ fontSize: 13, color: isSelected ? color : 'var(--text2)', lineHeight: 1.45, fontWeight: isSelected ? 500 : 400 }}>
                       {desc}
