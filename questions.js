@@ -107,7 +107,7 @@ export const DEFAULT_CATEGORIES = [
         crawl: "We rarely improve.",
         walk: "We remove surface issues every quarter.",
         run: "We remove underlying problems every second week.",
-        fly: "We remove root-causes immediately when issues are identified."
+        fly: 'We remove root-causes within days of issues being identified.'
       }
     ]
   }
