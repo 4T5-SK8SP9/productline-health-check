@@ -166,10 +166,11 @@ export default function Voting({ sessionData, go }) {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 11, fontWeight: 700,
                       color: isSelected ? '#fff' : color,
-                      letterSpacing: '0.04em', flexShrink: 0
+                        letterSpacing: '0.04em', flexShrink: 0, position: 'relative'
                     }}>
-                      <span style={{ fontSize: 9, opacity: 0.6, display: 'block' }}>{v}</span>{label.toUpperCase()}
-                    </div>
+                      {label.toUpperCase()}
+    <span style={{ position: 'absolute', bottom: 2, right: 4, fontSize: 9, fontWeight: 600, opacity: 0.6, lineHeight: 1 }}>{v}</span> </div>
+                   
                     <div style={{ fontSize: 13, color: isSelected ? color : 'var(--text2)', lineHeight: 1.45, fontWeight: isSelected ? 500 : 400 }}>
                       {desc}
                     </div>
