@@ -26,6 +26,11 @@ export default function Lobby({ sessionData, go }) {
     })
   }
 
+  function leaveSession() {
+    sessionStorage.removeItem('plhc_session')
+    go('home')
+  }
+
   return (
     <div className="page" style={{ paddingTop: '2rem' }}>
 
@@ -33,7 +38,7 @@ export default function Lobby({ sessionData, go }) {
       <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 'var(--radius)', padding: '12px 16px', marginBottom: '1.5rem' }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#14532D', marginBottom: 4 }}>💬 Tip: Turn on transcription</div>
         <div style={{ fontSize: 12, color: '#166534', lineHeight: 1.6 }}>
-          We recommend enabling transcription in Teams or Zoom before you start. The discussion between votes is where the real insights happen — capturing it lets your team reflect on it later.
+          We recommend enabling transcription in Teams before you start. The discussion between votes is where the real insights happen — capturing it lets your team reflect on it later.
         </div>
       </div>
 
@@ -94,12 +99,17 @@ export default function Lobby({ sessionData, go }) {
           </p>
         </>
       ) : (
-        <div style={{ textAlign: 'center', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
-          <div style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 8 }}>Waiting for facilitator to start…</div>
-          <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
-            {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', animation: `pulse 1.4s ${i * 0.2}s infinite` }} />)}
+        <>
+          <div style={{ textAlign: 'center', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', marginBottom: '1rem' }}>
+            <div style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 8 }}>Waiting for facilitator to start…</div>
+            <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+              {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', animation: `pulse 1.4s ${i * 0.2}s infinite` }} />)}
+            </div>
           </div>
-        </div>
+          <button onClick={leaveSession} style={{ width: '100%', padding: '10px 0', background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, color: 'var(--text3)', cursor: 'pointer' }}>
+            Leave session
+          </button>
+        </>
       )}
 
       <style>{`@keyframes pulse { 0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)} }`}</style>
