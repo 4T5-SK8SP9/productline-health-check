@@ -72,6 +72,11 @@ export default function Voting({ sessionData, go }) {
     navigator.clipboard.writeText(url).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
   }
 
+  function leaveSession() {
+    sessionStorage.removeItem('plhc_session')
+    go('home')
+  }
+
   if (!session) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: 'var(--text3)' }}>Connecting…</div>
 
   const qIdx = session.currentQuestion ?? 0
@@ -98,6 +103,11 @@ export default function Voting({ sessionData, go }) {
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>{memberName} · Round {round} of 2</div>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {!isFacilitator && (
+              <button onClick={leaveSession} style={{ fontSize: 11, padding: '4px 10px', background: 'none', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', color: 'var(--text3)' }}>
+                Leave
+              </button>
+            )}
             <button onClick={copyJoinLink} style={{ fontSize: 11, padding: '4px 10px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', color: copied ? '#14532D' : 'var(--text3)' }}>
               {copied ? '✓ Link copied' : '+ Invite'}
             </button>
@@ -166,11 +176,11 @@ export default function Voting({ sessionData, go }) {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 11, fontWeight: 700,
                       color: isSelected ? '#fff' : color,
-                        letterSpacing: '0.04em', flexShrink: 0, position: 'relative'
+                      letterSpacing: '0.04em', flexShrink: 0, position: 'relative'
                     }}>
                       {label.toUpperCase()}
-    <span style={{ position: 'absolute', bottom: 2, right: 4, fontSize: 9, fontWeight: 600, opacity: 0.6, lineHeight: 1 }}>{v}</span> </div>
-                   
+                      <span style={{ position: 'absolute', bottom: 2, right: 4, fontSize: 9, fontWeight: 600, opacity: 0.6, lineHeight: 1 }}>{v}</span>
+                    </div>
                     <div style={{ fontSize: 13, color: isSelected ? color : 'var(--text2)', lineHeight: 1.45, fontWeight: isSelected ? 500 : 400 }}>
                       {desc}
                     </div>
